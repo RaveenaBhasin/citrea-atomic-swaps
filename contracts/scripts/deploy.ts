@@ -2,7 +2,6 @@ import { createWalletClient, createPublicClient, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { abi as contractABI, bytecode } from '../out/AtomicSwap.sol/AtomicSwap.json'
 import { config } from 'dotenv'
-import { mainnet} from 'viem/chains'
 
 config();
 
@@ -10,7 +9,7 @@ const private_key = process.env.PRIVATE_KEY as string;
 if (!private_key) {
   throw new Error('PRIVATE_KEY is not set')
 }
-const contractBytecode = `0x${bytecode.object}` as const
+const contractBytecode = `${bytecode.object}` as `0x${string}`
 
 async function deployContract() {
 
