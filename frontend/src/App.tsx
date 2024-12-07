@@ -1,13 +1,16 @@
 import { useState } from "react";
-import Header from "./components/header";
 import Hero from "./components/hero";
-import WalletSelection from "./components/walletselect";
-import Dashboard from "./components/dashboard";
+
+import { Routes } from "react-router-dom";
+import { Route } from "react-router-dom";
+import Layout from "./components/layout";
+import GenerateRequest from "./components/GenerateRequest";
+import FullFillRequests from "./components/FullFillRequests";
 
 const App = () => {
-  const [connected, setConnected] = useState(false);
-  const [walletType, setWalletType] = useState('');
-  const [showTradingDashboard, setShowTradingDashboard] = useState(false);
+  // const [connected, setConnected] = useState(false);
+  const [, setWalletType] = useState('');
+
   const [requests, setRequests] = useState([
     {
       id: 1,
@@ -35,62 +38,17 @@ const App = () => {
     txHash?: string;
   }
 
-  const handleConnect = (type: string) => {
-    setWalletType(type);
-    setConnected(true);
-    setShowTradingDashboard(true);
-  };
-
-
-
-  const handleCreateRequest = (btcAddress: string, amount: string) => {
-    const newRequest: Request = {
-      id: requests.length + 1,
-      btcAddress,
-      amount,
-      status: 'pending',
-      created: new Date().toISOString().split('T')[0]
-    };
-    setRequests([newRequest, ...requests]);
-  };
-
-  const handleFulfillRequest = (id:number) => {
-    setRequests(requests.map(req => 
-      req.id === id 
-        ? { ...req, status: 'fulfilled', txHash: '0x' + Math.random().toString(16).slice(2) }
-        : req
-    ));
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header connected={connected} walletType={walletType} />
-      
-      {!showTradingDashboard ? (
-        <>
-          <Hero onGetStarted={() => setShowTradingDashboard(true)} />
-          {!connected && showTradingDashboard && (
-            <div className="container mx-auto px-4 py-8">
-              <WalletSelection onConnect={handleConnect} />
-            </div>
-          )}
-        </>
-      ) : (
-        <>
-          {!connected ? (
-            <div className="container mx-auto px-4 py-8">
-              <WalletSelection onConnect={handleConnect} />
-            </div>
-          ) : (
-            <Dashboard 
-              requests={requests}
-              onCreateRequest={handleCreateRequest}
-              onFulfillRequest={handleFulfillRequest}
-            />
-          )}
-        </>
-      )}
-    </div>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Hero />} />
+        <Route path="generate-requests" element={<GenerateRequest/>}/>
+
+        <Route path="view-requests" element={<FullFillRequests/>}/>
+        
+   
+      </Route>
+    </Routes>
   );
 };
 

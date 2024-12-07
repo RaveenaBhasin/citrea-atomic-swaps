@@ -6,76 +6,98 @@ declare global {
   }
 }
 import { Button } from "../ui/button";
-import { Bitcoin, Menu, X } from "lucide-react";
+import { Bitcoin, LogOut, Menu, X } from "lucide-react";
+import { useAtom } from "jotai";
+import { isWalletModalOpenAtom, walletAddressAtom, walletTypeAtom } from "../../atoms";
+import WalletModal from "../walletmodal";
+import WalletInfo from "../walletinfo";
 
-interface HeaderProps {
-  connected: boolean;
-  walletType: string;
-}
 
-const Header = ({ connected, walletType }: HeaderProps) => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    const connectUniSat = async () => {
-        if (typeof window.unisat !== 'undefined') {
-            console.log('UniSat Wallet is installed!');
+const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [walletType, setWalletType] = useAtom(walletTypeAtom);
+  const [walletAddress, setWalletAddress] = useAtom(walletAddressAtom);
+  const [, setIsWalletModalOpen] = useAtom(isWalletModalOpenAtom);
 
-            let accounts = await window.unisat.requestAccounts();
-            console.log('connect success', accounts);
-          } else {
-            console.log('UniSat Wallet is not installed!');
+
+    const handleDisconnect = async () => {
+      try {
+        if (walletType === 'metamask') {
+          // MetaMask doesn't have a disconnect method, just clear the state
+        } else if (walletType === 'unisat') {
+          // Check if UniSat has a disconnect method
+          if (window.unisat && typeof window.unisat.disconnect === 'function') {
+            await window.unisat.disconnect();
           }
-    }
-
-
+        }
+        // Clear the wallet state
+        setWalletType(null);
+        setWalletAddress(null);
+      } catch (error) {
+        console.error('Error disconnecting wallet:', error);
+      }
+    };
   
     return (
-      <header className="border-b">
-        <div className="container mx-auto px-2">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <Bitcoin className="h-6 w-6 text-yellow-500" />
-              <span className="font-bold">Citrea Atomic Swaps</span>
-            </div>
-  
-            <nav className="hidden md:flex items-center  ">
+      <>
+      <nav className="border-b p-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Bitcoin className="w-6 h-6" />
+            <span className="font-bold">Citrea Atomic Swaps</span>
+          </div>
+
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-4">
             <Button variant="link">Home</Button>
             <Button variant="link">Swap</Button>
-              {connected ? (
-                <div className="flex items-center">
-                  <span className="text-sm text-gray-600 mr-2">Connected to {walletType}</span>
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                </div>
-              ) : (
-                <Button variant="outline" size="sm" onClick={connectUniSat}>Connect Wallet</Button>
-              )}
-            </nav>
-  
-            <button 
-              className="md:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
+            {walletAddress ? (
+              <WalletInfo
+                walletType={walletType!}
+                walletAddress={walletAddress}
+                onDisconnect={handleDisconnect}
+              />
+            ) : (
+              <Button onClick={() => setIsWalletModalOpen(true)}>
+                Connect Wallet
+              </Button>
+            )}
           </div>
+
+          {/* Mobile Menu Button */}
+          <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X /> : <Menu />}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden border-t py-4">
-            <div className="container mx-auto px-4 space-y-4">
+          <div className="md:hidden mt-4 space-y-2">
             <Button variant="link" className="w-full">Home</Button>
             <Button variant="link" className="w-full">Swap</Button>
-              {connected ? (
-                <div className="flex items-center">
-                  <span className="text-sm text-gray-600 mr-2">Connected to {walletType}</span>
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                </div>
-              ) : (
-                <Button variant="outline" size="sm" className="w-full">Connect Wallet</Button>
-              )}
-            </div>
+            {walletAddress ? (
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={handleDisconnect}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Disconnect Wallet
+              </Button>
+            ) : (
+              <Button 
+                className="w-full"
+                onClick={() => setIsWalletModalOpen(true)}
+              >
+                Connect Wallet
+              </Button>
+            )}
           </div>
         )}
-      </header>
+      </nav>
+      <WalletModal />
+    </>
     );
   };
   
