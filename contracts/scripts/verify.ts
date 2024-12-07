@@ -126,8 +126,6 @@ class MerkleTree {
         throw error("No merkle proof");
     }
     let proofBlock = proofWithoutMerkleRoot.join("");
-    // return proof;
-    
     return proofBlock
   }
 }
@@ -163,7 +161,7 @@ async function main(){
 
   const merkleTree = new MerkleTree(doubleHashedResults);
   const merkleRoot = merkleTree.getMerkleRoot();
-  const index = 2; // Example index
+  const index = 2; 
   const proof = merkleTree.getProof(index);
   const wtxid = doubleHashedResults[index];
 
@@ -171,7 +169,6 @@ async function main(){
   console.log(`Block Hash: ${reverseHex(blockHash)}`);
   console.log(`Transaction wtxid: ${wtxid}`);
   console.log(`Merkle Proof: ${proof}`);
-  console.log(`Merkle Root: ${merkleRoot}`);
 }
 
 main()
