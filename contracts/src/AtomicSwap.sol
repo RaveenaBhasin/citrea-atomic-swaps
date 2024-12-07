@@ -14,6 +14,11 @@ contract AtomicSwap is IAtomicSwap {
 
     uint256 totalRequests;
 
+    event GenerateRequest(uint256 amount, string receiver);
+    event RequestFulfilled(bool isIncluded);
+    event ReleaseFunds(uint256 requestId, address user);
+    event RequestRevoked(uint256 requestId);
+
     constructor(address _bitcoinLightClient) {
         bitcoinLightClient = IBitcoinLightClient(_bitcoinLightClient);
     }
@@ -31,6 +36,7 @@ contract AtomicSwap is IAtomicSwap {
             generationTimestamp: block.timestamp,
             status: Status.Pending
         });
+        emit GenerateRequest(amount, reciever);
     }
 
     function getRequest(uint256 _id) public view returns (Request memory req_) {
@@ -52,6 +58,7 @@ contract AtomicSwap is IAtomicSwap {
         );
 
         require(is_included, "Transaction not included");
+        emit RequestFulfilled(is_included);
         releaseFundsTo(_requestId, msg.sender);
     }
 
@@ -65,6 +72,7 @@ contract AtomicSwap is IAtomicSwap {
         uint256 amount = request.amount;
         (bool success, bytes memory _data) = user.call{value: amount}("");
         require(success, "Failed to send funds");
+        emit ReleaseFunds(_requestId, user);
     }
 
     function revokeRequest(uint256 _requestId) external {
@@ -79,5 +87,6 @@ contract AtomicSwap is IAtomicSwap {
             value: request.amount
         }("");
         require(success, "Failed to send funds");
+        emit RequestRevoked(_requestId);
     }
 }
