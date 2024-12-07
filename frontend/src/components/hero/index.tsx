@@ -20,7 +20,7 @@ const Hero = () => {
          
          
           <Button size="lg" onClick={() => {
-            navigate("/gen-requests")
+            navigate("/generate-requests")
           }}>
             Generate requests
             <ArrowRightLeft className="ml-2 h-4 w-4" />

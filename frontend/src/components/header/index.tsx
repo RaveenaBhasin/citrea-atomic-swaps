@@ -24,14 +24,14 @@ const Header = () => {
     const handleDisconnect = async () => {
       try {
         if (walletType === 'metamask') {
-          // MetaMask doesn't have a disconnect method, just clear the state
+         
         } else if (walletType === 'unisat') {
-          // Check if UniSat has a disconnect method
+        
           if (window.unisat && typeof window.unisat.disconnect === 'function') {
             await window.unisat.disconnect();
           }
         }
-        // Clear the wallet state
+      
         setWalletType(null);
         setWalletAddress(null);
       } catch (error) {
@@ -48,7 +48,7 @@ const Header = () => {
             <span className="font-bold">Citrea Atomic Swaps</span>
           </div>
 
-          {/* Desktop Nav */}
+        
           <div className="hidden md:flex items-center gap-4">
             <Button variant="link">Home</Button>
             <Button variant="link">Swap</Button>
@@ -65,13 +65,13 @@ const Header = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+        
           <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
 
-        {/* Mobile Menu */}
+     
         {isMenuOpen && (
           <div className="md:hidden mt-4 space-y-2">
             <Button variant="link" className="w-full">Home</Button>
