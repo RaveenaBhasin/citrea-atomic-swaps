@@ -48,7 +48,7 @@ async function deployContract() {
     const hash = await wallet_client.deployContract({
       abi: contractABI,
       bytecode: contractBytecode,
-      args: [],
+      args: ["0x3100000000000000000000000000000000000001"],
     })
 
     console.log('Transaction hash:', hash)
