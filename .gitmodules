@@ -4,3 +4,6 @@
 [submodule "lib/bitcoin-spv"]
 	path = lib/bitcoin-spv
 	url = https://github.com/keep-network/bitcoin-spv
+[submodule "contracts/lib/bitcoin-spv"]
+	path = contracts/lib/bitcoin-spv
+	url = https://github.com/keep-network/bitcoin-spv
