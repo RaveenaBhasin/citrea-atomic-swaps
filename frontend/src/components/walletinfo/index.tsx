@@ -8,11 +8,11 @@ const truncateAddress = (address: string) => {
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
   };
 const WalletInfo = ({
-    walletType,
+    // walletType,
     walletAddress,
     onDisconnect
   }: {
-    walletType: string;
+    // walletType: string;
     walletAddress: string;
     onDisconnect: () => void;
   }) => {
@@ -22,7 +22,7 @@ const WalletInfo = ({
           <Button variant="outline" className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-500 rounded-full" />
             <span className="text-sm">
-              {walletType === 'metamask' ? 'MetaMask' : 'UniSat'}
+              {walletAddress.startsWith("0x") ? 'MetaMask' : 'UniSat'}
             </span>
             <span className="text-sm font-mono">
               {truncateAddress(walletAddress)}

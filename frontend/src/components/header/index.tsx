@@ -11,6 +11,7 @@ import { useAtom } from "jotai";
 import { isWalletModalOpenAtom, walletAddressAtom, walletTypeAtom } from "../../atoms";
 import WalletModal from "../walletmodal";
 import WalletInfo from "../walletinfo";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -20,27 +21,29 @@ const Header = () => {
   const [walletAddress, setWalletAddress] = useAtom(walletAddressAtom);
   const [, setIsWalletModalOpen] = useAtom(isWalletModalOpenAtom);
 
+  const navigate = useNavigate();
 
-    const handleDisconnect = async () => {
-      try {
-        if (walletType === 'metamask') {
-         
-        } else if (walletType === 'unisat') {
-        
-          if (window.unisat && typeof window.unisat.disconnect === 'function') {
-            await window.unisat.disconnect();
-          }
+
+  const handleDisconnect = async () => {
+    try {
+      if (walletType === 'metamask') {
+
+      } else if (walletType === 'unisat') {
+
+        if (window.unisat && typeof window.unisat.disconnect === 'function') {
+          await window.unisat.disconnect();
         }
-      
-        setWalletType(null);
-        setWalletAddress(null);
-      } catch (error) {
-        console.error('Error disconnecting wallet:', error);
       }
-    };
-  
-    return (
-      <>
+
+      setWalletType(null);
+      setWalletAddress(null);
+    } catch (error) {
+      console.error('Error disconnecting wallet:', error);
+    }
+  };
+
+  return (
+    <>
       <nav className="border-b p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -48,13 +51,24 @@ const Header = () => {
             <span className="font-bold">Citrea Atomic Swaps</span>
           </div>
 
-        
+
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="link">Home</Button>
-            <Button variant="link">Swap</Button>
+            <Button variant="link" onClick={() => {
+              navigate('/');
+            }}>Home</Button>
+            <Button variant="link"
+              onClick={() => {
+                navigate('/generate-requests');
+              }}
+            >Generate Requests</Button>
+            <Button variant="link"
+              onClick={() => {
+                navigate('/view-requests');
+              }}
+            >View & fulfill Requests</Button>
             {walletAddress ? (
               <WalletInfo
-                walletType={walletType!}
+                // walletType={walletType!}
                 walletAddress={walletAddress}
                 onDisconnect={handleDisconnect}
               />
@@ -65,20 +79,20 @@ const Header = () => {
             )}
           </div>
 
-        
+
           <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <X /> : <Menu />}
           </button>
         </div>
 
-     
+
         {isMenuOpen && (
           <div className="md:hidden mt-4 space-y-2">
             <Button variant="link" className="w-full">Home</Button>
             <Button variant="link" className="w-full">Swap</Button>
             {walletAddress ? (
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full"
                 onClick={handleDisconnect}
               >
@@ -86,7 +100,7 @@ const Header = () => {
                 Disconnect Wallet
               </Button>
             ) : (
-              <Button 
+              <Button
                 className="w-full"
                 onClick={() => setIsWalletModalOpen(true)}
               >
@@ -98,8 +112,8 @@ const Header = () => {
       </nav>
       <WalletModal />
     </>
-    );
-  };
-  
+  );
+};
 
-  export default Header;
+
+export default Header;
