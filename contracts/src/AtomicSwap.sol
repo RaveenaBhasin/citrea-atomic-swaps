@@ -5,5 +5,13 @@ import "bitcoin-spv/solidity/contracts/ValidateSPV.sol";
 import "./IBitcoinLightClient.sol";
 
 contract AtomicSwap {
-    function verifyTxn(uint256 blockNumber) public {}
+    uint256 public number;
+
+    function increase() public {
+        number++;
+    }
+
+    function get_number() public view returns (uint256) {
+        return number;
+    }
 }
