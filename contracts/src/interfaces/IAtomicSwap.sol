@@ -9,13 +9,17 @@ enum Status {
 
 struct Request {
     address requestor;
+    string reciever;
     uint256 amount;
     uint256 generationTimestamp;
     Status status;
 }
 
 interface IAtomicSwap {
-    function generateRequest(uint256 amount) external payable;
+    function generateRequest(
+        uint256 amount,
+        string memory reciever
+    ) external payable;
 
     function getRequest(
         uint256 _id

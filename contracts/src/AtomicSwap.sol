@@ -3,7 +3,6 @@ pragma solidity ^0.8.13;
 
 import "bitcoin-spv/solidity/contracts/ValidateSPV.sol";
 import "./interfaces/IBitcoinLightClient.sol";
-// import {IERC20} from "openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IAtomicSwap, Request, Status} from "./interfaces/IAtomicSwap.sol";
 
 contract AtomicSwap is IAtomicSwap {
@@ -19,11 +18,15 @@ contract AtomicSwap is IAtomicSwap {
         bitcoinLightClient = IBitcoinLightClient(_bitcoinLightClient);
     }
 
-    function generateRequest(uint256 amount) external payable {
+    function generateRequest(
+        uint256 amount,
+        string memory reciever
+    ) external payable {
         require(msg.value == amount, "Not enough funds sent");
         totalRequests++;
         requests[totalRequests] = Request({
             requestor: msg.sender,
+            reciever: reciever,
             amount: amount,
             generationTimestamp: block.timestamp,
             status: Status.Pending
