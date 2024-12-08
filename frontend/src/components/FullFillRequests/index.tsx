@@ -12,7 +12,7 @@ import { useAtom } from "jotai";
 import { walletAddressAtom } from "../../atoms";
 import { formatDateTime } from "../../utils/time";
 import { parseStatus } from "../../utils/chain";
-import { Loader2 } from "lucide-react";
+import { Bitcoin, Inbox, Loader2, RefreshCw } from "lucide-react";
 
 
 const FullFillRequests = () => {
@@ -296,105 +296,149 @@ const FullFillRequests = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex justify-between items-center">
-            <span className="text-lg">All Requests ({requests?.length})</span>
+      {/* Main Card with glass effect */}
+      <div className="bg-gradient-to-b from-white to-blue-50 rounded-2xl shadow-xl overflow-hidden border border-blue-100">
+        {/* Header Section */}
+        <div className="p-6 border-b border-blue-100 bg-white">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+                Active Swaps
+              </h2>
+              <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-full">
+                <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                <span className="text-sm text-blue-600 font-medium">
+                  {requests?.length || 0} Active
+                </span>
+              </div>
+            </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleRefresh}
-              className="text-sm"
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-all duration-300"
               disabled={isRefreshing}
             >
               {isRefreshing ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Refreshing...
+                  Syncing...
                 </>
               ) : (
-                'Refresh'
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                  Sync
+                </>
               )}
             </Button>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </div>
+        </div>
+
+        {/* Content Section */}
+        <div className="p-6">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-8 space-y-4">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="text-sm text-gray-500">Loading requests...</p>
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="relative">
+                <div className="w-16 h-16 border-4 border-blue-100 rounded-full animate-spin border-t-blue-500" />
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                  <Bitcoin className="h-6 w-6 text-blue-500" />
+                </div>
+              </div>
+              <p className="mt-4 text-gray-500 animate-pulse">Loading swaps...</p>
+            </div>
+          ) : requests.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="bg-blue-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Inbox className="h-10 w-10 text-blue-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No Active Swaps</h3>
+              <p className="text-gray-500 mb-4 max-w-sm mx-auto">
+                There are no active swap requests at the moment. Check back later or refresh.
+              </p>
+              <Button
+                variant="outline"
+                onClick={handleRefresh}
+                className="border-blue-200 hover:bg-blue-50"
+                disabled={isRefreshing}
+              >
+                Refresh List
+              </Button>
             </div>
           ) : (
-            <div className="space-y-4">
-              {requests.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500">No requests found</p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleRefresh}
-                    className="mt-2"
-                    disabled={isRefreshing}
-                  >
-                    Try Again
-                  </Button>
+            <div className="relative">
+              {isRefreshing && (
+                <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center">
+                  <div className="w-12 h-12 border-4 border-blue-200 rounded-full animate-spin border-t-blue-500" />
                 </div>
-              ) : (
-                <div className="space-y-4 relative">
-                  {isRefreshing && (
-                    <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    </div>
-                  )}
-                  {requests.map((request) => (
-                    <Card
-                      key={request.request_id}
-                      className="bg-gray-50 hover:bg-gray-100 transition-colors"
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
-                          <div>
-                            <p className="font-medium truncate max-w-[200px]">
-                              {request.requestor}
-                            </p>
-                            <div className="text-sm text-gray-600">
-                              <p>{request.created.relative}</p>
-                              <p className="text-xs">{request.created.full}</p>
-                            </div>
+              )}
+              <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2">
+                {requests.map((request) => (
+                  <div
+                    key={request.request_id}
+                    className="bg-white rounded-xl border border-gray-100 hover:border-blue-200 transition-all duration-300 hover:shadow-lg overflow-hidden group"
+                  >
+                    {/* Card Header */}
+                    <div className="p-5 border-b border-gray-50">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-blue-400" />
+                            <h3 className="font-medium text-gray-900">
+                              {request.requestor.slice(0, 6)}...{request.requestor.slice(-4)}
+                            </h3>
                           </div>
-                          <span className={`text-sm px-2 py-1 rounded ${
-                            request.status === 'pending'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-green-100 text-green-800'
-                          }`}>
-                            {request.status}
-                          </span>
+                          <div className="text-sm text-gray-500 mt-1">
+                            <p>{request.created.relative}</p>
+                            <p className="text-xs opacity-75">{request.created.full}</p>
+                          </div>
                         </div>
-                        <div className="space-y-2">
-                          <p className="text-sm flex items-center gap-2">
-                            <span className="text-gray-600">Amount:</span>
-                            <span className="font-medium">{request.amount} cBTC</span>
-                          </p>
+                        <span className={`
+                          px-3 py-1 rounded-full text-sm font-medium
+                          ${request.status === 'pending'
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                            : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          }
+                        `}>
+                          {request.status}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Card Content */}
+                    <div className="p-5 space-y-4">
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600">Amount</span>
+                          <div className="flex items-center gap-2">
+                            <Bitcoin className="h-4 w-4 text-blue-500" />
+                            <span className="font-semibold text-blue-600">
+                              {request.amount} cBTC
+                            </span>
+                          </div>
                         </div>
-                        {request.status === 'pending' && (
+                      </div>
+
+                      {request.status === 'pending' && (
+                        <div className="mt-4">
                           <RequestDialog
                             request={request}
                             onSendBitcoin={handleSendBitcoin}
                             onClaimCBTC={handleClaimCBTC}
                           />
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
+
 
 
 export default FullFillRequests;

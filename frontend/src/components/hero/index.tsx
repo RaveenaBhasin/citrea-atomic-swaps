@@ -6,7 +6,7 @@ const Hero = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-blue-50 via-white to-blue-50">
+    <div className=" relative overflow-hidden bg-gradient-to-b from-blue-50 via-white to-blue-50">
      
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -left-1/4 -top-1/4 w-1/2 h-1/2 bg-blue-100/30 rounded-full blur-3xl" />

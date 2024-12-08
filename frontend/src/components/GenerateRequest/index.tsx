@@ -1,4 +1,4 @@
-import { Loader2 } from "lucide-react";
+import { Loader2, RefreshCw, Wallet, Lock, Bitcoin, Inbox } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
@@ -412,62 +412,208 @@ const GenerateRequest = () => {
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen">
       <div className="grid md:grid-cols-2 gap-8">
-        <GenerateRequestForm
-          amount={amount}
-          btcAddress={btcAddress}
-          isLoading={isLoading}
-          onAmountChange={setAmount}
-          onBtcAddressChange={setBtcAddress}
-          onSubmit={handleGenerateRequest}
-        />
+      
+        <div className="bg-gradient-to-b from-white to-blue-50 rounded-2xl shadow-xl overflow-hidden border border-blue-100">
+          <div className="p-6 border-b border-blue-100 bg-white">
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+                Generate Swap
+              </h2>
+              <div className="px-3 py-1 bg-blue-50 rounded-full">
+                <span className="text-sm text-blue-600 font-medium">
+                  Lock cBTC
+                </span>
+              </div>
+            </div>
+          </div>
 
-        <Card className="h-full">
-          <CardHeader>
-            <CardTitle className="text-xl sm:text-2xl flex items-center justify-between">
-              Your Requests ({requests.length})
+          <div className="p-6">
+            <div className="space-y-6">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  Amount (cBTC)
+                </label>
+                <div className="mt-1 relative">
+                  <Input
+                    type="number"
+                    placeholder="0.0"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    disabled={isLoading}
+                    step="0.00000001"
+                    min="0"
+                    className="pl-4 pr-12 py-3 border-gray-200 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-xl"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <span className="text-gray-500 text-sm">cBTC</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  Bitcoin Address
+                </label>
+                <Input
+                  type="text"
+                  placeholder="Enter Bitcoin address"
+                  value={btcAddress}
+                  onChange={(e) => setBtcAddress(e.target.value)}
+                  disabled={isLoading}
+                  className="py-3 border-gray-200 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 rounded-xl"
+                />
+              </div>
+
+              {!address ? (
+                <Button
+                  className="w-full py-6 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-xl font-medium"
+                  onClick={connectMetaMask}
+                >
+                  <Wallet className="mr-2 h-5 w-5" />
+                  Connect MetaMask
+                </Button>
+              ) : (
+                <Button
+                  className="w-full py-6 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  onClick={handleGenerateRequest}
+                  disabled={isLoading || !btcAddress.trim() || !amount}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="mr-2 h-5 w-5" />
+                      Lock cBTC
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-b from-white to-blue-50 rounded-2xl shadow-xl overflow-hidden border border-blue-100">
+          <div className="p-6 border-b border-blue-100 bg-white">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+                  Your Swaps
+                </h2>
+                <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-full">
+                  <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                  <span className="text-sm text-blue-600 font-medium">
+                    {requests.length} Active
+                  </span>
+                </div>
+              </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={getRequests}
-                className="text-sm"
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                 disabled={isFetchingRequests}
               >
-                {isFetchingRequests ? 
-                  <div className="flex items-center">
+                {isFetchingRequests ? (
+                  <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Loading...
-                  </div> : 
-                  'Refresh'
-                }
+                    Syncing...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Sync
+                  </>
+                )}
               </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </div>
+          </div>
+
+          <div className="p-6">
             <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
               {!address ? (
-                <div className="text-center py-8">
-                  Connect your wallet to view requests
+                <div className="text-center py-16">
+                  <div className="bg-blue-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Wallet className="h-10 w-10 text-blue-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Wallet Not Connected</h3>
+                  <p className="text-gray-500 mb-4">Connect your wallet to view your swaps</p>
+                  <Button
+                    onClick={connectMetaMask}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    Connect Wallet
+                  </Button>
                 </div>
               ) : isFetchingRequests ? (
-                <LoadingState />
-              ) : requests?.length === 0 ? (
-                <p className="text-center text-gray-500 py-8">No requests found</p>
+                <div className="flex flex-col items-center justify-center py-16">
+                  <div className="relative">
+                    <div className="w-16 h-16 border-4 border-blue-100 rounded-full animate-spin border-t-blue-500" />
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                      <Bitcoin className="h-6 w-6 text-blue-500" />
+                    </div>
+                  </div>
+                  <p className="mt-4 text-gray-500 animate-pulse">Loading your swaps...</p>
+                </div>
+              ) : requests.length === 0 ? (
+                <div className="text-center py-16">
+                  <div className="bg-blue-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Inbox className="h-10 w-10 text-blue-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Swaps Yet</h3>
+                  <p className="text-gray-500">Start by generating a new swap request</p>
+                </div>
               ) : (
-                requests?.map((request, index) => (
-                  <RequestCard
-                    key={index}
-                    request={request}
-                    onUnlock={() => {}}
-                  />
-                ))
+                <div className="space-y-4">
+                  {requests.map((request, index) => (
+                    <div
+                      key={index}
+                      className="bg-white rounded-xl border border-gray-100 hover:border-blue-200 transition-all duration-300 hover:shadow-lg p-4"
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-blue-400" />
+                            <p className="font-medium">
+                              {request.requestor.slice(0, 6)}...{request.requestor.slice(-4)}
+                            </p>
+                          </div>
+                          <div className="text-sm text-gray-500 mt-1">
+                            <p>{request.created.relative}</p>
+                            <p className="text-xs">{request.created.full}</p>
+                          </div>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          request.status === 'pending'
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                            : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        }`}>
+                          {request.status}
+                        </span>
+                      </div>
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600">Amount</span>
+                          <div className="flex items-center gap-2">
+                            <Bitcoin className="h-4 w-4 text-blue-500" />
+                            <span className="font-semibold text-blue-600">
+                              {request.amount} cBTC
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
-
 };
 
 export default GenerateRequest;
